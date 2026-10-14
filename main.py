@@ -1,5 +1,6 @@
-from locale import D_T_FMT
-
+from locale import D_T_FMT # wtf is this
+from asteroidfield import AsteroidField
+from asteroid import Asteroid
 from constants import SCREEN_HEIGHT
 from constants import SCREEN_WIDTH
 from constants import PLAYER_RADIUS
@@ -16,12 +17,17 @@ def main():
 
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
+    asteroids = pygame.sprite.Group()
+
+    Asteroid.containers = (asteroids, updatable, drawable)
+    AsteroidField.containers = (updatable)
     Player.containers = (updatable, drawable)
+
+    asteroidField = AsteroidField()
     player = Player(x = SCREEN_WIDTH / 2, y = SCREEN_HEIGHT / 2, radius = PLAYER_RADIUS)
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
     dt = 0.0
-
 
 
     while True:
