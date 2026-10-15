@@ -1,11 +1,13 @@
-from locale import D_T_FMT # wtf is this
-from asteroidfield import AsteroidField
-from asteroid import Asteroid
 from constants import SCREEN_HEIGHT
 from constants import SCREEN_WIDTH
 from constants import PLAYER_RADIUS
 from player import Player
+from asteroid import Asteroid
+from asteroidfield import AsteroidField
+from shot import Shot
+from logger import log_event
 import pygame
+import sys
 from logger import log_state
 
 
@@ -18,8 +20,10 @@ def main():
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
     asteroids = pygame.sprite.Group()
+    shots = pygame.sprite.Group()
 
-    Asteroid.containers = (asteroids, updatable, drawable)
+    Shot.containers = (updatable, drawable, shots)
+    Asteroid.containers = (updatable, drawable, asteroids)
     AsteroidField.containers = (updatable)
     Player.containers = (updatable, drawable)
 
@@ -42,6 +46,19 @@ def main():
 
         for thing in updatable:
             thing.update(dt)
+
+        for asteroid in asteroids:
+            for shot in shots:
+                if asteroid.collides_with(shot):
+                    asteroid.kill()
+                    shot.kill()
+                    log_event("asteroid_shot")
+
+        for asteroid in asteroids:
+            if asteroid.collides_with(player):
+                log_event("player_hit")
+                print("Game over!")
+                sys.exit()
 
         pygame.display.flip()
         dt = clock.tick(60) / 1000

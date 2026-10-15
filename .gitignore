@@ -32,6 +32,7 @@ dmypy.json
 # pytest
 .pytest_cache/
 game_state.jsonl
+game_events.jsonl
 
 # Ruff
 .ruff_cache/
