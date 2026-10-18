@@ -1,6 +1,6 @@
 from circleshape import CircleShape
 from constants import PLAYER_RADIUS, PLAYER_SPEED, PLAYER_START_LEVEL
-from constants import PLAYER_SHOOT_SPEED, PLAYER_TURN_SPEED
+from constants import PLAYER_SHOOT_SPEED, PLAYER_TURN_SPEED, BASE_LEVEL_UP_XP
 from constants import LINE_WIDTH, PLAYER_SHOOT_COOLDOWN_SECONDS
 from shot import Shot
 import pygame
@@ -33,6 +33,9 @@ class Player(CircleShape):
         self.level = level
         self.health = level * 50 + 450
         self.max_health = level * 50 + 450
+        self.xp = 0
+        self.needed_xp = BASE_LEVEL_UP_XP # required xp to reach next level
+        self.next_level_xp = BASE_LEVEL_UP_XP # total xp required for the next level
 
     def triangle(self) -> list[pygame.Vector2]:
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
@@ -129,3 +132,15 @@ class Player(CircleShape):
         self.position += self.velocity * dt
         # push asteroid away (slightly less for variety)
         other.velocity -= normal * 100
+
+    def level_up(self, extra: int = 0):
+        self.level += 1
+        self.xp = extra
+        self.next_level_xp = BASE_LEVEL_UP_XP * (self.level * 1.5)
+        self.needed_xp = self.next_level_xp - extra
+
+    def gain_xp(self):
+        self.xp += 20
+        if self.xp >= self.needed_xp:
+            extra = self.xp - self.needed_xp
+            self.level_up(extra = extra)

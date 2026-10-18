@@ -1,6 +1,5 @@
 from player import Player
 from bar import Bar
-from constants import LINE_WIDTH
 import pygame
 
 class HealthBar(Bar):

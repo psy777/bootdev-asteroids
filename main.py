@@ -4,6 +4,7 @@ from constants import PLAYER_RADIUS
 from player import Player
 from bar import Bar
 from health_bar import HealthBar
+from level_bar import LevelBar
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from shot import Shot
@@ -29,6 +30,7 @@ def main():
     AsteroidField.containers = (updatable)
     Player.containers = (updatable, drawable)
     HealthBar.containers = (drawable,)
+    LevelBar.containers = (drawable, updatable)
 
     asteroidField = AsteroidField()
     player = Player(x = SCREEN_WIDTH / 2, y = SCREEN_HEIGHT / 2, radius = PLAYER_RADIUS, level = 1)
@@ -38,6 +40,7 @@ def main():
         y = player.position.y,
         length = 30.0,
         max_health = player.max_health)
+    level_bar = LevelBar(player = player, x = (SCREEN_WIDTH - 350.0) / 2, y = SCREEN_HEIGHT / 20, length = 350.0, max_value = 100)
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
     dt = 0.0
@@ -61,6 +64,7 @@ def main():
                 if asteroid.collides_with(shot):
                     asteroid.split()
                     shot.kill()
+                    player.gain_xp()
                     log_event("asteroid_shot")
 
         for asteroid in asteroids:
