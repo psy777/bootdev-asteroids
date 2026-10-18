@@ -32,6 +32,7 @@ class Player(CircleShape):
         self.auto_shooting = auto_shooting
         self.level = level
         self.health = level * 50 + 450
+        self.time_since_last_damage = 0.0
         self.max_health = level * 50 + 450
         self.xp = 0
         self.needed_xp = BASE_LEVEL_UP_XP # required xp to reach next level
@@ -50,6 +51,12 @@ class Player(CircleShape):
 
     def update(self, dt: float) -> None:
         self.cooldown -= dt # cooldown for shots
+        self.time_since_last_damage += dt # heal cooldown
+
+        # heal
+        if self.time_since_last_damage > 5.0 and self.health < self.max_health:
+                self.health *= 1.01
+
 
         # key controls
         keys = pygame.key.get_pressed()
@@ -114,6 +121,7 @@ class Player(CircleShape):
             self.auto_shooting = True
 
     def take_damage(self, other, dt):
+        self.time_since_last_damage = 0.0
         if other.radius <= 20:
             self.health -= 50
         elif other.radius > 20 and other.radius <= 40:
