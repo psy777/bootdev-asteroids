@@ -2,6 +2,8 @@ from constants import SCREEN_HEIGHT
 from constants import SCREEN_WIDTH
 from constants import PLAYER_RADIUS
 from player import Player
+from bar import Bar
+from health_bar import HealthBar
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from shot import Shot
@@ -26,9 +28,16 @@ def main():
     Asteroid.containers = (updatable, drawable, asteroids)
     AsteroidField.containers = (updatable)
     Player.containers = (updatable, drawable)
+    HealthBar.containers = (drawable,)
 
     asteroidField = AsteroidField()
-    player = Player(x = SCREEN_WIDTH / 2, y = SCREEN_HEIGHT / 2, radius = PLAYER_RADIUS)
+    player = Player(x = SCREEN_WIDTH / 2, y = SCREEN_HEIGHT / 2, radius = PLAYER_RADIUS, level = 1)
+    player_health_bar = HealthBar(
+        player = player,
+        x = player.position.x,
+        y = player.position.y,
+        length = 30.0,
+        max_health = player.max_health)
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
     dt = 0.0
@@ -56,9 +65,7 @@ def main():
 
         for asteroid in asteroids:
             if asteroid.collides_with(player):
-                log_event("player_hit")
-                print("Game over!")
-                sys.exit()
+                player.take_damage(asteroid, dt)
 
         pygame.display.flip()
         dt = clock.tick(60) / 1000

@@ -1,10 +1,11 @@
 from circleshape import CircleShape
-from constants import PLAYER_RADIUS, PLAYER_SPEED
+from constants import PLAYER_RADIUS, PLAYER_SPEED, PLAYER_START_LEVEL
 from constants import PLAYER_SHOOT_SPEED, PLAYER_TURN_SPEED
 from constants import LINE_WIDTH, PLAYER_SHOOT_COOLDOWN_SECONDS
 from shot import Shot
 import pygame
 import math
+import sys
 
 class Player(CircleShape):
     x: float
@@ -12,8 +13,16 @@ class Player(CircleShape):
     rotation: float
     cooldown: float
     auto_shooting: bool
+    level: int
 
-    def __init__(self, x, y, radius, rotation = 0, cooldown = 0.0, auto_shooting = False):
+    def __init__(self,
+            x, y,
+            radius,
+            rotation = 0,
+            cooldown = 0.0,
+            auto_shooting = False,
+            level:int = PLAYER_START_LEVEL
+            ):
         super().__init__(x, y, PLAYER_RADIUS)
         self.rotation = rotation
         self.cooldown = cooldown
@@ -21,6 +30,9 @@ class Player(CircleShape):
         self.last_mouse_y = 0
         self.last_mouse_move = 0
         self.auto_shooting = auto_shooting
+        self.level = level
+        self.health = level * 50 + 450
+        self.max_health = level * 50 + 450
 
     def triangle(self) -> list[pygame.Vector2]:
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
@@ -97,3 +109,23 @@ class Player(CircleShape):
             self.auto_shooting = False
         else:
             self.auto_shooting = True
+
+    def take_damage(self, other, dt):
+        if other.radius <= 20:
+            self.health -= 50
+        elif other.radius > 20 and other.radius <= 40:
+            self.health -= 100
+        else:
+            self.health -= 200
+
+        if self.health <= 0:
+            print("Game Over!")
+            sys.exit()
+
+        # collision normal from asteroid to player
+        normal = (self.position - other.position).normalize()
+        # push player away
+        self.velocity += normal * 800
+        self.position += self.velocity * dt
+        # push asteroid away (slightly less for variety)
+        other.velocity -= normal * 100
