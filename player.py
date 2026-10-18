@@ -11,14 +11,16 @@ class Player(CircleShape):
     y: float
     rotation: float
     cooldown: float
+    auto_shooting: bool
 
-    def __init__(self, x, y, radius, rotation = 0, cooldown = 0.0):
+    def __init__(self, x, y, radius, rotation = 0, cooldown = 0.0, auto_shooting = False):
         super().__init__(x, y, PLAYER_RADIUS)
         self.rotation = rotation
         self.cooldown = cooldown
         self.last_mouse_x = 0
         self.last_mouse_y = 0
         self.last_mouse_move = 0
+        self.auto_shooting = auto_shooting
 
     def triangle(self) -> list[pygame.Vector2]:
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
@@ -32,7 +34,6 @@ class Player(CircleShape):
         pygame.draw.polygon(screen, "white", self.triangle(), LINE_WIDTH)
 
     def update(self, dt: float) -> None:
-
         self.cooldown -= dt # cooldown for shots
 
         # key controls
@@ -45,13 +46,22 @@ class Player(CircleShape):
             self.move(dt)
         if keys[pygame.K_s]:
             self.move(dt * -1)
-        if keys[pygame.K_SPACE]:
+        if keys[pygame.K_SPACE]: # hold to shoot
             if self.cooldown > 0:
                 pass
             else:
                 self.cooldown = PLAYER_SHOOT_COOLDOWN_SECONDS
                 self.shoot()
+        if keys[pygame.K_c]: # toggle automatic shooting
+            self.toggle_shooting()
 
+        # if shooting toggle is on
+        if self.auto_shooting:
+            if self.cooldown > 0:
+                pass
+            else:
+                self.cooldown = PLAYER_SHOOT_COOLDOWN_SECONDS
+                self.shoot()
         # mouse controls
         self.rotate_with_mouse()
 
@@ -81,3 +91,9 @@ class Player(CircleShape):
         rotated_vector = vector.rotate(self.rotation)
         rotated_with_speed_vector = rotated_vector * PLAYER_SHOOT_SPEED
         shot.velocity += rotated_with_speed_vector
+
+    def toggle_shooting(self):
+        if self.auto_shooting == True:
+            self.auto_shooting = False
+        else:
+            self.auto_shooting = True
