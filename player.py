@@ -62,8 +62,8 @@ class Player(CircleShape):
         mouse_x, mouse_y = pygame.mouse.get_pos()
         dx = mouse_x - self.position.x
         dy = mouse_y - self.position.y
-        angle = math.degrees(math.atan2(dy, dx)) + 90
-        self.rotation = angle + 180
+        angle = math.degrees(math.atan2(dy, dx)) + 270
+        self.rotation = angle
 
         if mouse_x != self.last_mouse_x or mouse_y != self.last_mouse_y:
             self.last_mouse_move = pygame.time.get_ticks()
