@@ -1,4 +1,5 @@
 from constants import SCREEN_HEIGHT
+from constants import held_keys
 from constants import SCREEN_WIDTH
 from constants import PLAYER_RADIUS
 from player import Player
@@ -51,6 +52,10 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
+            elif event.type == pygame.KEYDOWN:
+                held_keys.add(event.scancode)
+            elif event.type == pygame.KEYUP:
+                held_keys.discard(event.scancode)
         screen.fill("black")
 
         for thing in drawable:

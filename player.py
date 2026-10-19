@@ -2,6 +2,7 @@ from circleshape import CircleShape
 from constants import PLAYER_RADIUS, PLAYER_SPEED, PLAYER_START_LEVEL
 from constants import PLAYER_SHOOT_SPEED, PLAYER_TURN_SPEED, BASE_LEVEL_UP_XP
 from constants import LINE_WIDTH, PLAYER_SHOOT_COOLDOWN_SECONDS
+from constants import held_keys
 from shot import Shot
 import pygame
 import math
@@ -59,22 +60,21 @@ class Player(CircleShape):
 
 
         # key controls
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_a]:
-            self.rotate(dt * -1)
-        if keys[pygame.K_d]:
-            self.rotate(dt)
-        if keys[pygame.K_w]:
+        if pygame.KSCAN_A in held_keys or pygame.KSCAN_LEFT in held_keys:
+            self.strafe(dt, False)
+        if pygame.KSCAN_D in held_keys or pygame.KSCAN_RIGHT in held_keys:
+            self.strafe(dt, True)
+        if pygame.KSCAN_W in held_keys or pygame.KSCAN_UP in held_keys:
             self.move(dt)
-        if keys[pygame.K_s]:
+        if pygame.KSCAN_S in held_keys or pygame.KSCAN_DOWN in held_keys:
             self.move(dt * -1)
-        if keys[pygame.K_SPACE]: # hold to shoot
+        if pygame.KSCAN_SPACE in held_keys: # hold to shoot
             if self.cooldown > 0:
                 pass
             else:
                 self.cooldown = PLAYER_SHOOT_COOLDOWN_SECONDS
                 self.shoot()
-        if keys[pygame.K_c]: # toggle automatic shooting
+        if pygame.KSCAN_C in held_keys: # toggle automatic shooting
             self.toggle_shooting()
 
         # if shooting toggle is on
@@ -106,6 +106,14 @@ class Player(CircleShape):
         rotated_vector = unit_vector.rotate(self.rotation)
         rotated_with_speed_vector = rotated_vector * PLAYER_SPEED * dt
         self.position += rotated_with_speed_vector
+
+    def strafe(self, dt: float, direction: bool = True) -> None:
+        right = pygame.Vector2(1, 0)
+        left = pygame.Vector2(-1, 0)
+        if direction:
+            self.position += right * PLAYER_SPEED * dt
+        else:
+            self.position += left * PLAYER_SPEED * dt
 
     def shoot(self):
         shot = Shot(self.position.x, self.position.y)
