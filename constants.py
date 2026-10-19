@@ -1,3 +1,5 @@
+import pygame
+
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 PLAYER_RADIUS = 20
@@ -14,3 +16,7 @@ PLAYER_SHOOT_COOLDOWN_SECONDS = 0.3
 PLAYER_START_LEVEL = 1
 BASE_LEVEL_UP_XP = 100
 held_keys = set()
+left = pygame.Vector2(-1, 0)
+right = pygame.Vector2(1, 0)
+up = pygame.Vector2(0, -1)
+down = pygame.Vector2(0, 1) # larger number -> bottom of screen

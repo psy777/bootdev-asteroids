@@ -2,7 +2,7 @@ from circleshape import CircleShape
 from constants import PLAYER_RADIUS, PLAYER_SPEED, PLAYER_START_LEVEL
 from constants import PLAYER_SHOOT_SPEED, PLAYER_TURN_SPEED, BASE_LEVEL_UP_XP
 from constants import LINE_WIDTH, PLAYER_SHOOT_COOLDOWN_SECONDS
-from constants import held_keys
+from constants import held_keys, left, right, up, down
 from shot import Shot
 import pygame
 import math
@@ -61,13 +61,13 @@ class Player(CircleShape):
 
         # key controls
         if pygame.KSCAN_A in held_keys or pygame.KSCAN_LEFT in held_keys:
-            self.strafe(dt, False)
+            self.move(dt, left)
         if pygame.KSCAN_D in held_keys or pygame.KSCAN_RIGHT in held_keys:
-            self.strafe(dt, True)
+            self.move(dt, right)
         if pygame.KSCAN_W in held_keys or pygame.KSCAN_UP in held_keys:
-            self.move(dt)
+            self.move(dt, up)
         if pygame.KSCAN_S in held_keys or pygame.KSCAN_DOWN in held_keys:
-            self.move(dt * -1)
+            self.move(dt, down)
         if pygame.KSCAN_SPACE in held_keys: # hold to shoot
             if self.cooldown > 0:
                 pass
@@ -107,13 +107,8 @@ class Player(CircleShape):
         rotated_with_speed_vector = rotated_vector * PLAYER_SPEED * dt
         self.position += rotated_with_speed_vector
 
-    def strafe(self, dt: float, direction: bool = True) -> None:
-        right = pygame.Vector2(1, 0)
-        left = pygame.Vector2(-1, 0)
-        if direction:
-            self.position += right * PLAYER_SPEED * dt
-        else:
-            self.position += left * PLAYER_SPEED * dt
+    def move(self, dt: float, direction: pygame.Vector2) -> None:
+        self.position += direction * PLAYER_SPEED * dt
 
     def shoot(self):
         shot = Shot(self.position.x, self.position.y)
